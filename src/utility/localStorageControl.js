@@ -16,5 +16,8 @@ const setItem = (key, value) => {
 const removeItem = (key) => {
   localStorage.removeItem(key);
 };
+const resetItem = () => {
+  localStorage.clear();
+};
 
-export { getItem, setItem, removeItem };
+export { getItem, setItem, removeItem, resetItem };

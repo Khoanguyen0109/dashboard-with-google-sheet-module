@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Link, NavLink, useHistory } from 'react-router-dom';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Typography } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { FacebookOutlined, TwitterOutlined } from '@ant-design/icons';
@@ -13,6 +13,8 @@ import Heading from '../../../../components/heading/heading';
 import { auth0options } from '../../../../config/auth0';
 import { useGoogleContext } from '../../../../context/GoogleContext';
 
+const { Text } = Typography;
+
 const domain = process.env.REACT_APP_AUTH0_DOMAIN;
 const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
 
@@ -22,33 +24,37 @@ function SignIn() {
   const history = useHistory();
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.auth.loading);
+  const error = useSelector((state) => state.auth.error);
   const [form] = Form.useForm();
   const [state, setState] = useState({
     checked: null,
   });
-  // console.log('window.gapi :>> ', window.gapi);
-  // console.log('window.gapi.get', window.gapi.client.getToken());
+
   const lock = new Auth0Lock(clientId, domain, auth0options);
 
-  const handleSubmit = useCallback(() => {
-    dispatch(login());
-    history.push('/admin');
-  }, [history, dispatch]);
+  const handleSubmit = useCallback(
+    (values) => {
+      console.log('values :>> ', values);
+      dispatch(login(values));
+      // history.push('/admin');
+    },
+    [dispatch],
+  );
 
   const onChange = (checked) => {
     setState({ ...state, checked });
   };
 
-  lock.on('authenticated', (authResult) => {
-    lock.getUserInfo(authResult.accessToken, (error) => {
-      if (error) {
-        return;
-      }
+  // lock.on('authenticated', (authResult) => {
+  //   lock.getUserInfo(authResult.accessToken, (error) => {
+  //     if (error) {
+  //       return;
+  //     }
 
-      handleSubmit();
-      lock.hide();
-    });
-  });
+  //     handleSubmit();
+  //     lock.hide();
+  //   });
+  // });
 
   return (
     <AuthWrapper>
@@ -61,14 +67,14 @@ function SignIn() {
             Sign in to <span className="color-secondary">Admin</span>
           </Heading>
           <Form.Item
-            name="username"
+            name="email"
             rules={[{ message: 'Please input your username or Email!', required: true }]}
-            initialValue="name@example.com"
-            label="Username or Email Address"
+            initialValue="example@example.com"
+            label="Email Address"
           >
             <Input />
           </Form.Item>
-          <Form.Item name="password" initialValue="123456" label="Password">
+          <Form.Item name="password" initialValue="123456789" label="Password">
             <Input.Password placeholder="Password" />
           </Form.Item>
           <div className="auth-form-action">
@@ -84,6 +90,7 @@ function SignIn() {
               {isLoading ? 'Loading...' : 'Sign In'}
             </Button>
           </Form.Item>
+          {error && <Text type="danger">{error}</Text>}
           <p className="form-divider">
             <span>Or</span>
           </p>

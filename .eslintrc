@@ -69,6 +69,7 @@
     "no-plusplus": 0,
     "prefer-destructuring": 0,
     "no-setter-return": 0,
-    "no-continue": 0
+    "no-continue": 0,
+    "react/self-closing-comp": 0
   }
 }

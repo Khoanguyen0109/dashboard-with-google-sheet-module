@@ -14,7 +14,7 @@ import {
 import { login } from '../../../../redux/authentication/actionCreator';
 
 const SignUp = () => {
-  const { isSignUpError, isSignUpLoading, isFbAuthenticate } = useSelector(state => {
+  const { isSignUpError, isSignUpLoading, isFbAuthenticate } = useSelector((state) => {
     return {
       isSignUpError: state.firebaseAuth.isSignUpError,
       isSignUpLoading: state.firebaseAuth.isSignUpLoading,
@@ -30,7 +30,7 @@ const SignUp = () => {
 
   const handleFbLogin = useCallback(() => {
     dispatch(login());
-    history.push('/admin');
+    // history.push('/admin');
   }, [dispatch, history]);
 
   useEffect(() => {
@@ -39,11 +39,11 @@ const SignUp = () => {
     }
   }, [isFbAuthenticate, handleFbLogin]);
 
-  const handleSubmit = values => {
+  const handleSubmit = (values) => {
     dispatch(fbAuthSignUp({ ...values, terms: state.checked }));
   };
 
-  const onChange = checked => {
+  const onChange = (checked) => {
     setState({ ...state, checked });
   };
 

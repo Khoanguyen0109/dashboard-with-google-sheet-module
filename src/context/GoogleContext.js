@@ -1,7 +1,6 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import loadScript from 'load-script';
-import { isString } from 'lodash';
-import decode from 'jwt-decode';
+
 import axios from 'axios';
 import { removeItem, setItem } from '../utility/localStorageControl';
 import { GOOGLE_ACCESS_TOKEN } from '../contants';
@@ -82,6 +81,7 @@ function GoogleProvider(props) {
       if (data.error !== undefined) {
         throw data;
       }
+      console.log('data :>> ', data);
       const accessToken = data.access_token;
       setItem(GOOGLE_ACCESS_TOKEN, accessToken);
 
