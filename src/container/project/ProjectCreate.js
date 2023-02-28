@@ -102,8 +102,8 @@ function Project({ match }) {
                           Late
                         </Link>
                       </li>
-                      <li className={state.categoryActive === 'early' ? 'active' : 'deactivate'}>
-                        <Link onClick={() => onChangeCategory('early')} to="#">
+                      <li className={state.categoryActive === 'active' ? 'active' : 'deactivate'}>
+                        <Link onClick={() => onChangeCategory('active')} to="#">
                           Early
                         </Link>
                       </li>

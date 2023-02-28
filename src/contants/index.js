@@ -4,4 +4,10 @@ export const REFRESH_TOKEN = 'refresh_token';
 
 export const USER_STATUS = {
   ACTIVE: 'active',
+  DISABLE: 'disabled',
+  PENDING: 'pending',
 };
+
+export const PERMISSIONS = {
+  VIEW: 'view'
+}

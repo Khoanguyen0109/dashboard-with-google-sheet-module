@@ -13,6 +13,8 @@ import Gallery from './gallery';
 import withAdminLayout from '../../layout/withAdminLayout';
 
 const Projects = lazy(() => import('./projects'));
+const Humans = lazy(() => import('./human'));
+
 const Calendars = lazy(() => import('../../container/Calendar'));
 const Inbox = lazy(() => import('../../container/email/Email'));
 const Chat = lazy(() => import('../../container/chat/ChatApp'));
@@ -48,7 +50,9 @@ function Admin() {
         <Route path={`${path}/users`} component={Users} />
         <Route path={`${path}/gallery`} component={Gallery} />
         <Route path={`${path}/project`} component={Projects} />
-        <Route path={`${path}/calendar`} component={Calendars} />        
+        <Route path={`${path}/humans`} component={Humans} />
+
+        <Route path={`${path}/calendar`} component={Calendars} />
         <Route path={`${path}/app/kanban`} component={Kanban} />
         <Route path={`${path}/email/:page`} component={Inbox} />
         <Route path={`${path}/firestore`} component={Firebase} />

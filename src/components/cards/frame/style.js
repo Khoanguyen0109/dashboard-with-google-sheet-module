@@ -81,16 +81,16 @@ const CardFrame = Styled(Card)`
         text-transform: uppercase;
         font-size: 10px;
         color: #fff;
-        &.early{
+        &.active{
           background: ${({ theme }) => theme['primary-color']};
         }
-        &.late{
+        &.pending{
           background: ${({ theme }) => theme['warning-color']};
         }
         &.complete{
           background: ${({ theme }) => theme['success-color']};
         }
-        &.progress{
+        &.disabled{
           background: ${({ theme }) => theme['danger-color']};
         }
       }

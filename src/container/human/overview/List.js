@@ -7,23 +7,24 @@ import Heading from '../../../components/heading/heading';
 import { Cards } from '../../../components/cards/frame/cards-frame';
 import { ProjectPagination, ProjectListTitle, ProjectListAssignees, ProjectList } from '../style';
 import { Dropdown } from '../../../components/dropdown/dropdown';
+import { Button } from '../../../components/buttons/buttons';
 
-function ProjectLists() {
-  const project = useSelector((state) => state.projects.data);
+function HumanList(props) {
+  const { data, mapRole, mapLevel, onSelected } = props;
   const [state, setState] = useState({
-    projects: project,
+    list: data,
     current: 0,
     pageSize: 0,
   });
-  const { projects } = state;
+  const { list } = state;
 
   useEffect(() => {
-    if (project) {
+    if (data) {
       setState({
-        projects: project,
+        list: data,
       });
     }
-  }, [project]);
+  }, [data]);
 
   const onShowSizeChange = (current, pageSize) => {
     setState({ ...state, current, pageSize });
@@ -36,64 +37,65 @@ function ProjectLists() {
 
   const dataSource = [];
 
-  if (projects.length)
-    projects.map((value) => {
-      const { id, title, status, category, percentage } = value;
+  if (list.length)
+    list.map((value) => {
+      const { id, name, status, createdDate, gender, email, role, level, address, image, phoneNumber, permissions } =
+        value;
       return dataSource.push({
         key: id,
-        project: (
+        name: (
           <ProjectListTitle>
             <Heading as="h4">
-              <Link to={`/admin/project/projectDetails/${id}`}>{title}</Link>
+              <Link to={`/admin/project/projectDetails/${id}`}>{name}</Link>
             </Heading>
-
-            <p>{category}</p>
           </ProjectListTitle>
         ),
-        startDate: <span className="date-started">26 Dec 2019</span>,
-        deadline: <span className="date-finished">18 Mar 2020</span>,
-        assigned: (
-          <ProjectListAssignees>
-            <ul>
-              <li>
-                <img src={require(`../../../static/img/users/1.png`)} alt="" />
-              </li>
-              <li>
-                <img src={require(`../../../static/img/users/2.png`)} alt="" />
-              </li>
-              <li>
-                <img src={require(`../../../static/img/users/3.png`)} alt="" />
-              </li>
-              <li>
-                <img src={require(`../../../static/img/users/4.png`)} alt="" />
-              </li>
-              <li>
-                <img src={require(`../../../static/img/users/5.png`)} alt="" />
-              </li>
-              <li>
-                <img src={require(`../../../static/img/users/6.png`)} alt="" />
-              </li>
-              <li>
-                <img src={require(`../../../static/img/users/7.png`)} alt="" />
-              </li>
-            </ul>
-          </ProjectListAssignees>
-        ),
+        createdDate: <span className="date-finished">{createdDate}</span>,
+
+        email: <span className="date-finished">{email}</span>,
+        phoneNumber: <span className="date-finished">{phoneNumber}</span>,
+        gender: <span className="">{gender}</span>,
+
+        level: <span className="">{mapLevel(level)}</span>,
+        address: <span className="">{address}</span>,
+        role: <span className="">{mapRole(role)}</span>,
+        permissions: <span className="">{permissions}</span>,
+        // assigned: (
+        //   <ProjectListAssignees>
+        //     <ul>
+        //       <li>
+        //         <img src={require(`../../../static/img/users/1.png`)} alt="" />
+        //       </li>
+        //       <li>
+        //         <img src={require(`../../../static/img/users/2.png`)} alt="" />
+        //       </li>
+        //       <li>
+        //         <img src={require(`../../../static/img/users/3.png`)} alt="" />
+        //       </li>
+        //       <li>
+        //         <img src={require(`../../../static/img/users/4.png`)} alt="" />
+        //       </li>
+        //       <li>
+        //         <img src={require(`../../../static/img/users/5.png`)} alt="" />
+        //       </li>
+        //       <li>
+        //         <img src={require(`../../../static/img/users/6.png`)} alt="" />
+        //       </li>
+        //       <li>
+        //         <img src={require(`../../../static/img/users/7.png`)} alt="" />
+        //       </li>
+        //     </ul>
+        //   </ProjectListAssignees>
+        // ),
         status: <Tag className={status}>{status}</Tag>,
-        completion: (
-          <div className="project-list-progress">
-            <Progress percent={status === 'complete' ? 100 : percentage} strokeWidth={5} className="progress-primary" />
-            <p>12/15 Task Completed</p>
-          </div>
-        ),
+
         action: (
           <Dropdown
             className="wide-dropdwon"
             content={
               <>
-                <Link to="#">View</Link>
-                <Link to="#">Edit</Link>
-                <Link to="#">Delete</Link>
+                <Button onClick={() => onSelected(id)}>Edit</Button>
+                <Button to="#">Delete</Button>
               </>
             }
           >
@@ -107,36 +109,62 @@ function ProjectLists() {
 
   const columns = [
     {
-      title: 'Project',
-      dataIndex: 'project',
+      title: 'Name',
+      dataIndex: 'name',
       key: 'project',
     },
     {
-      title: 'Start Date',
-      dataIndex: 'startDate',
-      key: 'startDate',
+      title: 'Created Date',
+      dataIndex: 'createdDate',
+      key: 'createdDate',
     },
     {
-      title: 'Deadline',
-      dataIndex: 'deadline',
-      key: 'deadline',
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
     },
     {
-      title: 'Assigned To',
-      dataIndex: 'assigned',
-      key: 'assigned',
+      title: 'Phone Number',
+      dataIndex: 'phoneNumber',
+      key: 'phoneNumber',
+    },
+    {
+      title: 'Gender',
+      dataIndex: 'gender',
+      key: 'gender',
+    },
+    {
+      title: 'image',
+      dataIndex: 'image',
+      key: 'image',
+    },
+
+    {
+      title: 'Level',
+      dataIndex: 'level',
+      key: 'level',
+    },
+    {
+      title: 'Address',
+      dataIndex: 'address',
+      key: 'address',
+    },
+    {
+      title: 'Role',
+      dataIndex: 'role',
+      key: 'role',
+    },
+
+    {
+      title: 'Permissions',
+      dataIndex: 'permissions',
+      key: 'permissions',
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
     },
-    {
-      title: 'Completion',
-      dataIndex: 'completion',
-      key: 'completion',
-    },
-
     {
       title: '',
       dataIndex: 'action',
@@ -157,7 +185,7 @@ function ProjectLists() {
       </Col>
       <Col xs={24} className="pb-30">
         <ProjectPagination>
-          {projects.length ? (
+          {list.length ? (
             <Pagination
               onChange={onHandleChange}
               showSizeChanger
@@ -173,4 +201,4 @@ function ProjectLists() {
   );
 }
 
-export default ProjectLists;
+export default HumanList;

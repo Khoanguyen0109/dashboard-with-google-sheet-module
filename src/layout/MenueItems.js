@@ -48,6 +48,20 @@ function MenuItems({ darkMode, toggleCollapsed, topMenu, events }) {
       overflowedIndicator={<FeatherIcon icon="more-vertical" />}
       openKeys={openKeys}
     >
+      <Menu.Item
+        icon={
+          !topMenu && (
+            <NavLink className="menuItem-iocn" to={`${path}/humans`}>
+              <FeatherIcon icon="check-square" />
+            </NavLink>
+          )
+        }
+        key="humans"
+      >
+        <NavLink onClick={toggleCollapsed} to={`${path}/humans`}>
+          Humans
+        </NavLink>
+      </Menu.Item>
       <SubMenu key="dashboard" icon={!topMenu && <FeatherIcon icon="home" />} title="Dashboard">
         <Menu.Item key="home">
           <NavLink onClick={toggleCollapsed} to={`${path}`}>

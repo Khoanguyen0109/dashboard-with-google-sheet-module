@@ -266,13 +266,13 @@ const ProjectCard = Styled.div`
                 background: red;
                 color: #fff;
                 border: 0 none;
-                &.early{
+                &.active{
                     background: ${({ theme }) => theme['primary-color']};
                 }
-                &.progress{
+                &.disabled{
                     background: ${({ theme }) => theme['danger-color']};
                 }
-                &.late{
+                &.pending{
                     background: ${({ theme }) => theme['warning-color']};
                 }
                 &.complete{

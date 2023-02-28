@@ -1138,7 +1138,7 @@ const RatioCard = Styled.div`
                 bottom: 26px;
                 font-weight: 500;
             }
-            &.progress-success{
+            &.disabled-success{
                 .ant-progress-text{
                     color: ${({ theme }) => theme['success-color']};
                 }

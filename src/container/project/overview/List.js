@@ -35,7 +35,6 @@ function ProjectLists() {
   };
 
   const dataSource = [];
-
   if (projects.length)
     projects.map((value) => {
       const { id, title, status, category, percentage } = value;
