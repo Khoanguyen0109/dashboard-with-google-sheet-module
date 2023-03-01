@@ -6,20 +6,31 @@ import { Button } from '../../../components/buttons/buttons';
 import { Modal } from '../../../components/modals/antd-modals';
 import { CheckboxGroup } from '../../../components/checkbox/checkbox';
 import { BasicFormWrapper } from '../../styled';
-import { get, post } from '../../../config/axios';
+import { get, post, patch } from '../../../config/axios';
+import { PERMISSIONS, USER_STATUS } from '../../../contants';
 
 const { Option } = Select;
 const dateFormat = 'MM/DD/YYYY';
 
-function CreateHuman({ selected, levels, setLevels, roles, setRoles, visible, onCancel }) {
+function CreateHuman({
+  selected,
+  setSelected,
+  levels,
+  onAdd,
+  onUpdate,
+  setLevels,
+  roles,
+  setRoles,
+  visible,
+  onCancel,
+}) {
   const [form] = Form.useForm();
   const isEdit = selected && visible;
   const inputRef = useRef(null);
   const roleRef = useRef(null);
   const [roleAddOn, setRoleAddOn] = useState('');
-
   const [levelAddOn, setLevelAddOn] = useState('');
-
+  const [creating, setCreating] = useState(false)
   const onChangeRoleAddOn = (e) => {
     setRoleAddOn(e.target.value);
   };
@@ -52,6 +63,8 @@ function CreateHuman({ selected, levels, setLevels, roles, setRoles, visible, on
       setLoading(true);
       const res = await get(`/users/${selected}`);
       console.log('res :>> ', res);
+      res.data.permissions = res.data.permissions.split(',');
+      console.log('res.data', res.data);
       form.setFieldsValue(res.data);
       setLoading(false);
     } catch (error) {}
@@ -74,21 +87,33 @@ function CreateHuman({ selected, levels, setLevels, roles, setRoles, visible, on
     }
   }, [selected, visible]);
 
-  const handleOk = () => {
+  const handleOk = async () => {
+    setCreating(true)
+    if (!isEdit) {
+      const res = await post('users', {
+        ...form.getFieldsValue(),
+      });
+      onAdd(res.data);
+    } else {
+      const res = await patch('users', {
+        ...form.getFieldsValue(),
+      });
+      onUpdate(res.data);
+    }
+    form.resetFields();
+    setSelected(null);
+    setCreating(false)
     onCancel();
   };
 
   const handleCancel = () => {
+    form.setFieldValue({});
+    setSelected(null);
     onCancel();
   };
-
-  const addItem = (e) => {
-    e.preventDefault();
-    // setItems([...items, name || `New item ${index++}`]);
-    // setName('');
-    // setTimeout(() => {
-    //   inputRef.current?.focus();
-    // }, 0);
+  const handleChange = (value) => {
+    console.log('value', value);
+    form.setFieldValue('permissions', value.join(','));
   };
 
   return (
@@ -98,7 +123,7 @@ function CreateHuman({ selected, levels, setLevels, roles, setRoles, visible, on
       visible={state.visible}
       footer={[
         <div key="1" className="project-modal-footer">
-          <Button size="default" type="primary" key="submit" onClick={handleOk}>
+          <Button size="default" loading={creating} type="primary" key="submit" onClick={handleOk}>
             Add New Project
           </Button>
           <Button size="default" type="white" key="back" outlined onClick={handleCancel}>
@@ -209,7 +234,16 @@ function CreateHuman({ selected, levels, setLevels, roles, setRoles, visible, on
                   </Space>
                 </Select>
               </Form.Item>
-              <Form.Item name="phoneNumber" label="">
+              <Form.Item
+                name="phoneNumber"
+                label=""
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input phone number!',
+                  },
+                ]}
+              >
                 <Input placeholder="Phone number" />
               </Form.Item>
               <Form.Item
@@ -240,17 +274,7 @@ function CreateHuman({ selected, levels, setLevels, roles, setRoles, visible, on
               >
                 <Input placeholder="Address" />
               </Form.Item>
-              <Form.Item
-                name="password"
-                label="Password"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your password!',
-                  },
-                ]}
-                hasFeedback
-              >
+              <Form.Item name="password" label="Password" hasFeedback>
                 <Input />
               </Form.Item>
               <Form.Item
@@ -258,10 +282,11 @@ function CreateHuman({ selected, levels, setLevels, roles, setRoles, visible, on
                 label="New Password"
                 initialValue={form.getFieldValue('password')}
                 rules={[
-                  {
+                  !isEdit && {
                     required: true,
-                    message: 'Please confirm your password!',
+                    message: 'Please select gender!',
                   },
+                  { min: 5, message: 'Password must be minimum 8 characters.' },
                   ({ getFieldValue }) => ({
                     validator(_, value) {
                       if (!value || getFieldValue('password') === value) {
@@ -274,50 +299,32 @@ function CreateHuman({ selected, levels, setLevels, roles, setRoles, visible, on
               >
                 <Input.Password />
               </Form.Item>
-              <Form.Item name="name" label="">
-                <Input placeholder="Name" />
+              <Form.Item name="permissions" label="">
+                <Select
+                  mode="multiple"
+                  placeholder="Permissions"
+                  allowClear
+                  defaultValue={form.getFieldValue('permissions')}
+                  style={{ width: '100%' }}
+                  onChange={handleChange}
+                  options={PERMISSIONS.map((item) => ({
+                    label: item.label,
+                    value: item.value,
+                  }))}
+                ></Select>{' '}
               </Form.Item>
-              <Form.Item name="name" label="">
-                <Input placeholder="Name" />
+              <Form.Item name="status" label="">
+                <Select
+                  placeholder="Status"
+                  allowClear
+                  style={{ width: '100%' }}
+                  onChange={handleChange}
+                  options={Object.keys(USER_STATUS).map((key) => ({
+                    label: key,
+                    value: USER_STATUS[key],
+                  }))}
+                ></Select>{' '}
               </Form.Item>
-              <Form.Item name="name" label="">
-                <Input placeholder="Name" />
-              </Form.Item>
-              {/* <Form.Item name="category" initialValue="" label="">
-                <Select style={{ width: '100%' }}>
-                  <Option value="">Project Category</Option>
-                  <Option value="one">Project One</Option>
-                  <Option value="two">Project Two</Option>
-                </Select>
-              </Form.Item>
-              <Form.Item name="description" label="">
-                <Input.TextArea rows={4} placeholder="Project Description" />
-              </Form.Item>
-              <Form.Item name="pricacy" initialValue={['team']} label="Project Privacy">
-                <CheckboxGroup options={options} />
-              </Form.Item>
-              <Form.Item name="members" label="Project Members">
-                <Input placeholder="Search Members" />
-              </Form.Item>
-              <div className="projects-members mb-30">
-                <img style={{ width: '35px' }} src={require(`../../../static/img/users/1.png`)} alt="" />
-                <img style={{ width: '35px' }} src={require(`../../../static/img/users/2.png`)} alt="" />
-                <img style={{ width: '35px' }} src={require(`../../../static/img/users/3.png`)} alt="" />
-                <img style={{ width: '35px' }} src={require(`../../../static/img/users/4.png`)} alt="" />
-                <img style={{ width: '35px' }} src={require(`../../../static/img/users/5.png`)} alt="" />
-              </div>
-              <Row gutter={15}>
-                <Col md={12}>
-                  <Form.Item name="start" label="Start Date">
-                    <DatePicker placeholder="mm/dd/yyyy" format={dateFormat} />
-                  </Form.Item>
-                </Col>
-                <Col md={12}>
-                  <Form.Item name="end" label="End Date">
-                    <DatePicker placeholder="mm/dd/yyyy" format={dateFormat} />
-                  </Form.Item>
-                </Col>
-              </Row> */}
             </Form>
           </BasicFormWrapper>
         )}

@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Table, Progress, Pagination, Tag } from 'antd';
+import { Row, Col, Table, Progress, Pagination, Tag, Typography } from 'antd';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
+import moment from 'moment';
 import Heading from '../../../components/heading/heading';
 import { Cards } from '../../../components/cards/frame/cards-frame';
 import { ProjectPagination, ProjectListTitle, ProjectListAssignees, ProjectList } from '../style';
 import { Dropdown } from '../../../components/dropdown/dropdown';
 import { Button } from '../../../components/buttons/buttons';
+
+const { Text } = Typography;
 
 function HumanList(props) {
   const { data, mapRole, mapLevel, onSelected } = props;
@@ -50,16 +53,24 @@ function HumanList(props) {
             </Heading>
           </ProjectListTitle>
         ),
-        createdDate: <span className="date-finished">{createdDate}</span>,
+        createdDate: <span className="date-finished">{moment(new Date(createdDate)).format('DD/MM/YYYY')}</span>,
 
         email: <span className="date-finished">{email}</span>,
         phoneNumber: <span className="date-finished">{phoneNumber}</span>,
         gender: <span className="">{gender}</span>,
 
         level: <span className="">{mapLevel(level)}</span>,
-        address: <span className="">{address}</span>,
+        address: (
+          <Text ellipsis={{ tooltip: address }} style={{ width: '200px' }}>
+            {address}
+          </Text>
+        ),
         role: <span className="">{mapRole(role)}</span>,
-        permissions: <span className="">{permissions}</span>,
+        permissions: (
+          <Text ellipsis={{ tooltip: permissions }} style={{ width: 200 }}>
+            {permissions}
+          </Text>
+        ),
         // assigned: (
         //   <ProjectListAssignees>
         //     <ul>

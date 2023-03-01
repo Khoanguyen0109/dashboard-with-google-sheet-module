@@ -19,6 +19,7 @@ const Button = props => {
     social,
     load,
     children,
+    loading,
     ...rest
   } = props;
   const [state, setState] = useState({
@@ -44,7 +45,7 @@ const Button = props => {
       color={color}
       social={social}
       onClick={load && enterLoading}
-      loading={state.loading}
+      loading={loading}
       {...rest}
     >
       {children}

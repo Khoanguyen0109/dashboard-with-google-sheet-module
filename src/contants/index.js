@@ -8,6 +8,17 @@ export const USER_STATUS = {
   PENDING: 'pending',
 };
 
-export const PERMISSIONS = {
-  VIEW: 'view'
-}
+export const PERMISSIONS = [
+  {
+    labe: 'Create and Edit User',
+    value: 'createUser',
+  },
+  {
+    labe: 'Delete User',
+    value: 'deleteUser',
+  },
+  {
+    labe: 'View User',
+    value: 'viewUser',
+  },
+];

@@ -53,5 +53,5 @@ instance.interceptors.response.use(
   },
 );
 
-const { get, post, delete: remove, put } = instance;
-export { get, post, remove, put };
+const { get, post, patch, delete: remove, put } = instance;
+export { get, post, patch,remove, put };

@@ -70,6 +70,19 @@ function Human({ match }) {
   const mapLevel = (id) => {
     return levels.find((level) => level.id.toString() === id.toString())?.levelName;
   };
+
+  const onAdd = (add) => {
+    setData([...data, add]);
+  };
+  const onUpdate = (update) => {
+    const index = data.findIndex((item) => item.id === update.id);
+    const newArray = [...data];
+    newArray[index] = update;
+    setData(newArray);
+  };
+  const remove = (id) => {
+    setData(data.filter((item) => item.id !== id));
+  };
   return (
     <>
       <ProjectHeader>
@@ -92,7 +105,7 @@ function Human({ match }) {
                   <Spin />
                 </div>
               ) : (
-                <List data={data} onSelected={onSelected} mapRole={mapRole} mapLevel={mapLevel} />
+                <List data={data} onSelected={onSelected} mapRole={mapRole} mapLevel={mapLevel} remove={remove} />
               )}
             </div>
           </Col>
@@ -107,6 +120,9 @@ function Human({ match }) {
           mapLevel={mapLevel}
           setLevels={setLevels}
           setRoles={setRoles}
+          setSelected={setSelected}
+          onAdd={onAdd}
+          onUpdate={onUpdate}
         />
       </Main>
     </>
