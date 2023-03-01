@@ -1,7 +1,6 @@
 import React, { lazy, useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Row, Col, Spin, Select } from 'antd';
-import { Switch, NavLink, Route, Link } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import propTypes from 'prop-types';
 import CreateHuman from './overview/CreateHuman';
@@ -92,10 +91,10 @@ function Human({ match }) {
       <ProjectHeader>
         <PageHeader
           ghost
-          title="Humans"
+          title="User"
           buttons={[
             <Button onClick={showModal} key="1" type="primary" size="default">
-              <FeatherIcon icon="plus" size={16} /> Create Projects
+              <FeatherIcon icon="plus" size={16} /> Create User
             </Button>,
           ]}
         />

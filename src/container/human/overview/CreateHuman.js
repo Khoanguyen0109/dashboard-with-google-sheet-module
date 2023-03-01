@@ -1,17 +1,30 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Form, Input, Select, Col, Row, DatePicker, Spin, Divider, Space } from 'antd';
+import { Form, Input, Select, Col, Row, DatePicker, Spin, Divider, Space, Upload, message } from 'antd';
 import propTypes from 'prop-types';
 import { PlusOutlined } from '@ant-design/icons';
+import FeatherIcon from 'feather-icons-react';
 import { Button } from '../../../components/buttons/buttons';
 import { Modal } from '../../../components/modals/antd-modals';
-import { CheckboxGroup } from '../../../components/checkbox/checkbox';
 import { BasicFormWrapper } from '../../styled';
 import { get, post, patch } from '../../../config/axios';
-import { PERMISSIONS, USER_STATUS } from '../../../contants';
+import { ACCESS_TOKEN, PERMISSIONS, USER_STATUS } from '../../../contants';
+import Heading from '../../../components/heading/heading';
+import { getItem } from '../../../utility/localStorageControl';
+
+const { Dragger } = Upload;
 
 const { Option } = Select;
-const dateFormat = 'MM/DD/YYYY';
-
+const beforeUpload = (file) => {
+  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+  if (!isJpgOrPng) {
+    message.error('You can only upload JPG/PNG file!');
+  }
+  const isLt2M = file.size / 1024 / 1024 < 2;
+  if (!isLt2M) {
+    message.error('Image must smaller than 2MB!');
+  }
+  return isJpgOrPng && isLt2M;
+};
 function CreateHuman({
   selected,
   setSelected,
@@ -31,6 +44,8 @@ function CreateHuman({
   const [roleAddOn, setRoleAddOn] = useState('');
   const [levelAddOn, setLevelAddOn] = useState('');
   const [creating, setCreating] = useState(false);
+  const [image, setImage] = useState(null);
+  console.log('image :>> ', image);
   const onChangeRoleAddOn = (e) => {
     setRoleAddOn(e.target.value);
   };
@@ -48,7 +63,7 @@ function CreateHuman({
   const addRole = async () => {
     try {
       const res = await post('roles', { roleName: roleAddOn });
-      setLevels([...levels, res.data]);
+      setRoles([...levels, res.data]);
       setRoleAddOn('');
     } catch (error) {}
   };
@@ -66,6 +81,11 @@ function CreateHuman({
       res.data.permissions = res.data.permissions.split(',');
       console.log('res.data', res.data);
       form.setFieldsValue(res.data);
+      setImage({
+        uid: res.data.imageId,
+        name: res.data.imageName,
+        thumbUrl: `https://drive.google.com/uc?export=view&id=${res.data.imageId}`,
+      });
       setLoading(false);
     } catch (error) {}
   };
@@ -93,32 +113,69 @@ function CreateHuman({
       if (!isEdit) {
         const res = await post('users', {
           ...form.getFieldsValue(),
+          ...image,
         });
         onAdd(res.data);
       } else {
         const res = await patch(`users/${selected}`, {
           ...form.getFieldsValue(),
-          permissions: form.getFieldValue('permissions').toString()
+          ...image,
+          permissions: form.getFieldValue('permissions').toString(),
         });
         onUpdate(res.data);
       }
       form.resetFields();
       setSelected(null);
+      setImage([]);
       onCancel();
-    } catch (error) {}finally{
+    } catch (error) {
+    } finally {
       setCreating(false);
-
     }
   };
-
+  console.log('image', image);
   const handleCancel = () => {
     form.resetFields();
     setSelected(null);
+    setImage([]);
     onCancel();
   };
   const handleChange = (value) => {
     console.log('value', value);
     form.setFieldValue('permissions', value.join(','));
+  };
+  console.log('form :>> ', form.getFieldsValue());
+  const fileUploadProps = {
+    name: 'files',
+    multiple: false,
+    action: `${process.env.REACT_APP_API_ENDPOINT}/upload`,
+    headers: {
+      Authorization: `Bearer ${getItem(ACCESS_TOKEN)}`,
+    },
+    onChange(info) {
+      const { status } = info.file;
+      if (status !== 'uploading') {
+        // setState({ ...state, file: info.file, list: info.fileList });
+      }
+      if (status === 'done') {
+        setImage({
+          imageId: info.file.response.id,
+          imageName: info.file.name,
+          thumbUrl: `https://drive.google.com/uc?export=view&id=${info.file.response.id}`,
+        });
+        message.success(`${info.file.name} file uploaded successfully.`);
+      } else if (status === 'error') {
+        message.error(`${info.file.name} file upload failed.`);
+      }
+    },
+    fileList: image ? [image] : [],
+    beforeUpload,
+    maxCount: 1,
+    listType: 'picture',
+    showUploadList: {
+      showRemoveIcon: true,
+      removeIcon: <FeatherIcon icon="trash-2" onClick={(e) => console.log(e, 'custom removeIcon event')} />,
+    },
   };
 
   return (
@@ -130,7 +187,7 @@ function CreateHuman({
       footer={[
         <div key="1" className="project-modal-footer">
           <Button size="default" loading={creating} type="primary" key="submit" onClick={handleOk}>
-            Add New Project
+            {isEdit ? 'Save' : 'Create'}
           </Button>
           <Button size="default" type="white" key="back" outlined onClick={handleCancel}>
             Cancel
@@ -138,7 +195,6 @@ function CreateHuman({
         </div>,
       ]}
       maskClosable={false}
-
       onCancel={handleCancel}
     >
       <div className="project-modal">
@@ -177,6 +233,17 @@ function CreateHuman({
                   <Option value="Other">Other Two</Option>
                 </Select>
               </Form.Item>
+              <Dragger {...fileUploadProps}>
+                <p className="ant-upload-drag-icon">
+                  <FeatherIcon icon="upload" size={50} />
+                </p>
+                <Heading as="h4" className="ant-upload-text">
+                  Drag and drop an image
+                </Heading>
+                <p className="ant-upload-hint">
+                  or <span>Browse</span> to choose a file
+                </p>
+              </Dragger>
               <Form.Item
                 name="level"
                 label=""
@@ -325,8 +392,7 @@ function CreateHuman({
                 <Select
                   placeholder="Status"
                   allowClear
-                  defaultValue={form.getFieldValue('status')}
-
+                  defaultValue={isEdit ? form.getFieldValue('status') : USER_STATUS.ACTIVE}
                   style={{ width: '100%' }}
                   onChange={handleChange}
                   options={Object.keys(USER_STATUS).map((key) => ({

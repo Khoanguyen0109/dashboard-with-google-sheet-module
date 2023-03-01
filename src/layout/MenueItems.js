@@ -59,7 +59,7 @@ function MenuItems({ darkMode, toggleCollapsed, topMenu, events }) {
         key="humans"
       >
         <NavLink onClick={toggleCollapsed} to={`${path}/humans`}>
-          Humans
+          Users
         </NavLink>
       </Menu.Item>
       <SubMenu key="dashboard" icon={!topMenu && <FeatherIcon icon="home" />} title="Dashboard">

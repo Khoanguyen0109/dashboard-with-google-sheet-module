@@ -14,6 +14,8 @@ import { AllPosts, BackShadowEmoji, Title } from './style';
 import { Cards } from '../../../../../components/cards/frame/cards-frame';
 import { Button } from '../../../../../components/buttons/buttons';
 import { likeUpdate, commentUpdate, postDelete } from '../../../../../redux/profile/actionCreator';
+import { getItem } from '../../../../../utility/localStorageControl';
+import { ACCESS_TOKEN } from '../../../../../contants';
 
 function ExampleComment({ children, replay }) {
   return (
@@ -77,6 +79,8 @@ function Posts({ postId, from, time, img, like, comment, content, author }) {
     action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
     headers: {
       authorization: 'authorization-text',
+      Authorization: `Bearer ${getItem(ACCESS_TOKEN)}`,
+
     },
     listType: 'picture-card',
     onChange(info) {
@@ -97,7 +101,7 @@ function Posts({ postId, from, time, img, like, comment, content, author }) {
 
   const attachment = {
     name: 'file',
-    action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+    action: `${process.env.REACT_APP_API_ENDPOINT}`,
     headers: {
       authorization: 'authorization-text',
     },

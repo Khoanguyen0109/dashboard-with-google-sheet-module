@@ -42,7 +42,7 @@ function HumanList(props) {
 
   if (list.length)
     list.map((value) => {
-      const { id, name, status, createdDate, gender, email, role, level, address, image, phoneNumber, permissions } =
+      const { id, name, status, createdDate, gender, email, role, level, address, imageId, phoneNumber, permissions } =
         value;
       return dataSource.push({
         key: id,
@@ -54,7 +54,22 @@ function HumanList(props) {
           </ProjectListTitle>
         ),
         createdDate: <span className="date-finished">{moment(new Date(createdDate)).format('DD/MM/YYYY')}</span>,
-
+        image: (
+          <ProjectListAssignees>
+            <ul>
+              <li>
+                <img
+                  src={
+                    imageId
+                      ? `https://drive.google.com/uc?export=view&id=${imageId}`
+                      : require(`../../../static/img/users/1.png`)
+                  }
+                  alt=""
+                />
+              </li>
+            </ul>
+          </ProjectListAssignees>
+        ),
         email: <span className="date-finished">{email}</span>,
         phoneNumber: <span className="date-finished">{phoneNumber}</span>,
         gender: <span className="">{gender}</span>,
@@ -145,7 +160,7 @@ function HumanList(props) {
       key: 'gender',
     },
     {
-      title: 'image',
+      title: 'Image',
       dataIndex: 'image',
       key: 'image',
     },
