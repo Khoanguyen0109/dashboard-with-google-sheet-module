@@ -9,7 +9,7 @@ import { ProjectHeader, ProjectSorting } from './style';
 import { Button } from '../../components/buttons/buttons';
 import { Main } from '../styled';
 import { PageHeader } from '../../components/page-headers/page-headers';
-import { get } from '../../config/axios';
+import { get, remove } from '../../config/axios';
 
 const List = lazy(() => import('./overview/List'));
 
@@ -80,8 +80,12 @@ function Human({ match }) {
     newArray[index] = update;
     setData(newArray);
   };
-  const remove = (id) => {
-    setData(data.filter((item) => item.id !== id));
+
+  const onDelete = async (id) => {
+    try {
+      const res = await remove(`/users/${id}`);
+      setData(data.filter((item) => item.id !== id));
+    } catch (error) {}
   };
   return (
     <>
@@ -105,7 +109,7 @@ function Human({ match }) {
                   <Spin />
                 </div>
               ) : (
-                <List data={data} onSelected={onSelected} mapRole={mapRole} mapLevel={mapLevel} remove={remove} />
+                <List data={data} onSelected={onSelected} mapRole={mapRole} mapLevel={mapLevel} onDelete={onDelete} />
               )}
             </div>
           </Col>

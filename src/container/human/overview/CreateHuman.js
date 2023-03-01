@@ -30,7 +30,7 @@ function CreateHuman({
   const roleRef = useRef(null);
   const [roleAddOn, setRoleAddOn] = useState('');
   const [levelAddOn, setLevelAddOn] = useState('');
-  const [creating, setCreating] = useState(false)
+  const [creating, setCreating] = useState(false);
   const onChangeRoleAddOn = (e) => {
     setRoleAddOn(e.target.value);
   };
@@ -88,26 +88,31 @@ function CreateHuman({
   }, [selected, visible]);
 
   const handleOk = async () => {
-    setCreating(true)
-    if (!isEdit) {
-      const res = await post('users', {
-        ...form.getFieldsValue(),
-      });
-      onAdd(res.data);
-    } else {
-      const res = await patch('users', {
-        ...form.getFieldsValue(),
-      });
-      onUpdate(res.data);
+    try {
+      setCreating(true);
+      if (!isEdit) {
+        const res = await post('users', {
+          ...form.getFieldsValue(),
+        });
+        onAdd(res.data);
+      } else {
+        const res = await patch(`users/${selected}`, {
+          ...form.getFieldsValue(),
+          permissions: form.getFieldValue('permissions').toString()
+        });
+        onUpdate(res.data);
+      }
+      form.resetFields();
+      setSelected(null);
+      onCancel();
+    } catch (error) {}finally{
+      setCreating(false);
+
     }
-    form.resetFields();
-    setSelected(null);
-    setCreating(false)
-    onCancel();
   };
 
   const handleCancel = () => {
-    form.setFieldValue({});
+    form.resetFields();
     setSelected(null);
     onCancel();
   };
@@ -118,6 +123,7 @@ function CreateHuman({
 
   return (
     <Modal
+      on
       type={state.modalType}
       title="Create Project"
       visible={state.visible}
@@ -131,6 +137,8 @@ function CreateHuman({
           </Button>
         </div>,
       ]}
+      maskClosable={false}
+
       onCancel={handleCancel}
     >
       <div className="project-modal">
@@ -317,6 +325,8 @@ function CreateHuman({
                 <Select
                   placeholder="Status"
                   allowClear
+                  defaultValue={form.getFieldValue('status')}
+
                   style={{ width: '100%' }}
                   onChange={handleChange}
                   options={Object.keys(USER_STATUS).map((key) => ({

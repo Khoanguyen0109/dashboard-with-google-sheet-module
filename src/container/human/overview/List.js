@@ -13,7 +13,7 @@ import { Button } from '../../../components/buttons/buttons';
 const { Text } = Typography;
 
 function HumanList(props) {
-  const { data, mapRole, mapLevel, onSelected } = props;
+  const { data, mapRole, onDelete, mapLevel, onSelected } = props;
   const [state, setState] = useState({
     list: data,
     current: 0,
@@ -104,10 +104,10 @@ function HumanList(props) {
           <Dropdown
             className="wide-dropdwon"
             content={
-              <>
+              <div>
                 <Button onClick={() => onSelected(id)}>Edit</Button>
-                <Button to="#">Delete</Button>
-              </>
+                <Button onClick={() => onDelete(id)}>Delete</Button>
+              </div>
             }
           >
             <Link to="#">
